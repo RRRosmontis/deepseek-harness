@@ -1,0 +1,109 @@
+# The dsh-qwen-mm bundle patch: one insert over the base profile rows.
+#
+# The `qwen-mm` row mounts this bundle's own plugin, which registers the
+# bundled Qwen-MM-Plugins skill provider on `ctx.skills`. Each `mcp-qwen-mm-*`
+# row mounts one Qwen-MM-Plugins capability through the in-box
+# `@deepseek-ai/dsh-mcp-client` bridge, spawning its stdio MCP server via uvx.
+# `edu-agent` is skill-only upstream and has no MCP server.
+#
+# Server refs pin the immutable release tags also used by the vendored skills;
+# refresh both together (see the package README). Users disable an unwanted
+# capability in their profile cordis.patch.yml by id:
+#
+#   - id: mcp-qwen-mm-blender
+#     disabled: true
+
+- insert:
+    - id: qwen-mm
+      name: '@deepseek-ai/dsh-qwen-mm'
+
+    # Image attachment bridge: exports dragged/pasted images to local files
+    # and, on text-only routes, rewrites them into path references so the
+    # model can read them through the qwen-mm MCP tools. Disable by id in the
+    # profile patch to keep native image blocks on image-capable routes.
+    - id: qwen-mm-attachments
+      name: '@deepseek-ai/dsh-qwen-mm/attachments'
+
+    - id: mcp-qwen-mm-core
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: qwen-mm-plugins-core
+        transport: stdio
+        command: uvx
+        args:
+          - '--from'
+          - 'qwen-mm-plugins[core] @ git+https://github.com/QwenLM/Qwen-MM-Plugins.git@qwen-mm-plugins-core-v1.0.1'
+          - 'qwen-mm-plugins-core'
+        cwd: !!js process.cwd()
+
+    - id: mcp-qwen-mm-api
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: qwen-mm-plugins-api
+        transport: stdio
+        command: uvx
+        args:
+          - '--from'
+          - 'qwen-mm-plugins[api] @ git+https://github.com/QwenLM/Qwen-MM-Plugins.git@qwen-mm-plugins-api-v1.0.2'
+          - 'qwen-mm-plugins-api'
+        cwd: !!js process.cwd()
+
+    - id: mcp-qwen-mm-search
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: qwen-mm-plugins-search
+        transport: stdio
+        command: uvx
+        args:
+          - '--from'
+          - 'qwen-mm-plugins[search] @ git+https://github.com/QwenLM/Qwen-MM-Plugins.git@qwen-mm-plugins-search-v1.0.2'
+          - 'qwen-mm-plugins-search'
+        cwd: !!js process.cwd()
+
+    - id: mcp-qwen-mm-video-memory
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: qwen-mm-plugins-video-memory
+        transport: stdio
+        command: uvx
+        args:
+          - '--from'
+          - 'qwen-mm-plugins[video-memory] @ git+https://github.com/QwenLM/Qwen-MM-Plugins.git@qwen-mm-plugins-video-memory-v1.0.1'
+          - 'qwen-mm-plugins-video-memory'
+        cwd: !!js process.cwd()
+
+    - id: mcp-qwen-mm-video-edit
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: qwen-mm-plugins-video-edit
+        transport: stdio
+        command: uvx
+        args:
+          - '--from'
+          - 'qwen-mm-plugins[video-edit] @ git+https://github.com/QwenLM/Qwen-MM-Plugins.git@qwen-mm-plugins-video-edit-v1.0.1'
+          - 'qwen-mm-plugins-video-edit'
+        cwd: !!js process.cwd()
+
+    - id: mcp-qwen-mm-blender
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: qwen-mm-plugins-blender
+        transport: stdio
+        command: uvx
+        args:
+          - '--from'
+          - 'qwen-mm-plugins[blender] @ git+https://github.com/QwenLM/Qwen-MM-Plugins.git@qwen-mm-plugins-blender-v1.0.1'
+          - 'qwen-mm-plugins-blender'
+        cwd: !!js process.cwd()
+
+    - id: mcp-qwen-mm-freecad
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: qwen-mm-plugins-freecad
+        transport: stdio
+        command: uvx
+        args:
+          - '--from'
+          - 'qwen-mm-plugins[freecad] @ git+https://github.com/QwenLM/Qwen-MM-Plugins.git@qwen-mm-plugins-freecad-v1.0.1'
+          - 'qwen-mm-plugins-freecad'
+        cwd: !!js process.cwd()

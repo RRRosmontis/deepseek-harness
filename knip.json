@@ -778,6 +778,11 @@
         "@deepseek-ai/dsh-code-runtime-worker-thread"
       ]
     },
+    "packages/bundle/qwen-mm": {
+      "ignoreDependencies": [
+        "@deepseek-ai/dsh-mcp-client"
+      ]
+    },
     "packages/bundle/web-app": {
       "ignoreDependencies": [
         "@deepseek-ai/.+"

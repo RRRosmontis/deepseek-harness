@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-13-qwen-mm-attachment-bridge.md
+2026-08-13-qwen-mm-attachment-bridge.md: 38c80099dfb82129a66016783349b3672626e5f6
+2026-08-13-qwen-mm-attachment-bridge.zh.md: 953147f7aabb3887f962fae34299318d3cad274e
