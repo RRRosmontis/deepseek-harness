@@ -24,6 +24,15 @@ describe('local attachment service', () => {
     })
   })
 
+  it('registers and disposes image-intake consumers', () => {
+    const service = new LocalAttachmentStore(new Context(), {})
+    expect(service.hasImageIntakeConsumer()).toBe(false)
+    const dispose = service.registerImageIntakeConsumer('qwen-mm-attachments')
+    expect(service.hasImageIntakeConsumer()).toBe(true)
+    dispose()
+    expect(service.hasImageIntakeConsumer()).toBe(false)
+  })
+
   it('saves and reads through the service boundary', async () => {
     const dshHome = await mkdtemp(join(tmpdir(), 'dsh-attachment-service-'))
     try {

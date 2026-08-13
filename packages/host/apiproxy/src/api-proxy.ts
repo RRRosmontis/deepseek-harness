@@ -2485,7 +2485,13 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             if (hasImage) {
               const current = selectionFor(agent).current
               const modelInfo = await ctx.llm.resolveModelInfo(current.provider, current.model)
-              if (modelInfo.inputModalities !== undefined && !modelInfo.inputModalities.includes('image')) {
+              // A plugin that consumes image blocks on text-only routes (the
+              // qwen-mm attachment bridge) registers an image-intake consumer;
+              // with one present, uploading is allowed and the consumer
+              // rewrites the blocks before any text-only serializer sees them.
+              if (modelInfo.inputModalities !== undefined
+                && !modelInfo.inputModalities.includes('image')
+                && !ctx.attachments.hasImageIntakeConsumer()) {
                 return err(request, {
                   code: 'attachment-error',
                   message: `Model "${current.model}" does not support image input.`,

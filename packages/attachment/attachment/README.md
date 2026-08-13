@@ -6,6 +6,8 @@ The durable attachment seam. `ctx.attachments` validates and atomically commits 
 
 Unsent composer images remain browser-owned temporary drafts. `validateImage` runs the same admission policy without persisting; batch writers validate every member first so a malformed member cannot strand earlier members as unreferenced objects. `saveImage` commits each accepted image before any model-visible session event is published, and `readImage` verifies the content-addressed object against its logged metadata. Callers may cancel `readImage`; implementations observe cancellation around backend and verification work and preserve it instead of translating it into a storage failure.
 
+Plugins that consume image blocks on text-only routes register themselves with `registerImageIntakeConsumer`; the host image-intake gate admits uploads on a text-only route only when the model declares image input or at least one consumer is registered.
+
 ## Model Experience
 
 Indirectly, through the role-neutral core `ImageBlock` and provider adapters that resolve its durable reference.

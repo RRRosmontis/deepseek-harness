@@ -27,12 +27,38 @@ declare module '@deepseek-ai/cordis' {
 
 /** Immutable binary attachment service. Implementations validate bytes before publishing a reference. */
 export abstract class AttachmentStore extends Service {
+  private readonly imageIntakeConsumers = new Set<string>()
+
   constructor(ctx: Context) {
     super(ctx, 'attachments')
   }
 
   /** Deployment-resolved image policy used by authoritative and fast-path validation. */
   abstract readonly imageLimits: ImageAttachmentLimits
+
+  /**
+   * Register one plugin that consumes image blocks on text-only routes
+   * (for example by exporting them to files an external MCP tool can read).
+   * The host image-intake gate then admits images even when the route model
+   * declares no `image` input modality.
+   * @param plugin - the consuming plugin's name.
+   * @returns a disposer that unregisters the consumer.
+   */
+  registerImageIntakeConsumer(plugin: string): () => void {
+    this.imageIntakeConsumers.add(plugin)
+    return () => {
+      this.imageIntakeConsumers.delete(plugin)
+    }
+  }
+
+  /**
+   * Whether any plugin in the composition consumes image blocks on behalf of
+   * text-only routes. Consulted by the host image-intake gate.
+   * @returns true when at least one consumer is registered.
+   */
+  hasImageIntakeConsumer(): boolean {
+    return this.imageIntakeConsumers.size > 0
+  }
 
   /**
    * Validate one image without persisting it.
